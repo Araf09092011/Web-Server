@@ -1,0 +1,25 @@
+{
+    "araf": {
+        "Name": "araf",
+        "Full Name": "Imran Faruk E Araf",
+        "Age": "14",
+        "Occupation": "Student",
+        "Country": "Bangladesh"
+    },
+
+
+    "jobayer": {
+        "Name": "jobayer",
+        "Full Name": "Jobayer Ahammad Fahim",
+        "Age": "13",
+        "Occupation": "Student",
+        "Country": "Bangladesh"
+    },
+    "arijit": {
+        "Name": "arijit",
+        "Full Name": "Arijit Chakraborty",
+        "Age": "14",
+        "Occupation": "Student",
+        "Country": "Bangladesh"
+    }
+}

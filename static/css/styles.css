@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Secure Data Server</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="background"></div>
+
+  <div class="main-window">
+    <!-- Recognize Button + Upload -->
+    <div>
+      <form action="/recognize" method="POST" enctype="multipart/form-data">
+        <label for="image-upload" class="icon-button"
+               style="background-image: url('{{ url_for('static', filename='list.png') }}')"
+               title="Recognize Face"></label>
+        <input id="image-upload" name="image" type="file" accept="image/*" capture="user" required>
+        <button type="submit" class="btn">🔍 Recognize</button>
+      </form>
+    </div>
+
+    <!-- Register Button -->
+    <div>
+      <a href="/register">
+        <div class="icon-button"
+             style="background-image: url('{{ url_for('static', filename='register.png') }}')"
+             title="Register Face">
+        </div>
+      </a>
+      <button onclick="window.location='/register'" class="btn">📸 Register</button>
+    </div>
+  </div>
+</body>
+</html>

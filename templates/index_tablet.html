@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mobile UI</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      background-image: url('{{ url_for("static", filename="Background_security_tab.png") }}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .buttons {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 20px;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 80%;
+      text-align: center;
+    }
+    .buttons a {
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 18px;
+    }
+    .buttons a:hover {
+      background: rgba(255, 255, 255, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="buttons">
+    <a href="/register">Register</a>
+    <a href="/recognize">Recognize</a>
+    <a href="/student_list">Student List</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Register Face</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url('{{ url_for("static", filename="Background_security.png") }}');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .wrapper {
+    margin-top: 30px;
+    background-color: rgba(0, 0, 0, 0.55);
+    padding: 20px;
+    border-radius: 16px;
+    width: 95%;
+    max-width: 500px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  h1 {
+    margin-bottom: 15px;
+  }
+
+  video {
+    border-radius: 12px;
+    box-shadow: 0 0 15px #0077aa;
+    width: 100%;
+    max-height: 360px;
+    background-color: black;
+  }
+
+  #captured-images img {
+    margin: 10px 5px;
+    border-radius: 8px;
+    width: 120px;
+    height: auto;
+    box-shadow: 0 0 10px #00ccff;
+  }
+
+  input, button {
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  button {
+    background-color: #004466;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #0077aa;
+  }
+
+  form {
+    margin-top: 20px;
+  }
+
+  @media (max-width: 600px) {
+    video {
+      width: 100%;
+      max-height: 300px;
+    }
+    #captured-images img {
+      width: 80px;
+      margin: 5px 3px;
+    }
+    input, button {
+      font-size: 18px;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="wrapper">
+    <h1>Register Face</h1>
+
+    <video id="video" autoplay muted playsinline></video>
+    <br />
+    <button id="capture-btn">Capture Photo</button>
+
+    <div id="captured-images"></div>
+
+    <form id="register-form">
+      <input type="text" id="name" placeholder="Unique Name (no spaces)" required autocomplete="off"/><br />
+      <input type="text" id="full_name" placeholder="Full Name" autocomplete="off"/><br />
+      <input type="text" id="age" placeholder="Age" autocomplete="off"/><br />
+      <input type="text" id="occupation" placeholder="Occupation" autocomplete="off"/><br />
+      <input type="text" id="country" placeholder="Country" autocomplete="off"/><br />
+      <button type="submit">Submit Registration</button>
+    </form>
+  </div>
+
+<script>
+  const video = document.getElementById("video");
+  const captureBtn = document.getElementById("capture-btn");
+  const capturedImagesDiv = document.getElementById("captured-images");
+  const registerForm = document.getElementById("register-form");
+
+  let capturedImages = [];
+
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => {
+      video.srcObject = stream;
+    })
+    .catch(err => {
+      alert("Could not access webcam: " + err);
+    });
+
+  captureBtn.addEventListener("click", () => {
+    if (capturedImages.length >= 5) {
+      alert("Maximum 5 photos allowed");
+      return;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(video, 0, 0);
+
+    const dataUrl = canvas.toDataURL("image/png");
+    capturedImages.push(dataUrl);
+
+    const imgElem = document.createElement("img");
+    imgElem.src = dataUrl;
+    capturedImagesDiv.appendChild(imgElem);
+  });
+
+  registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    if (capturedImages.length === 0) {
+      alert("Please capture at least one photo.");
+      return;
+    }
+
+    const data = {
+      name: document.getElementById("name").value.trim(),
+      full_name: document.getElementById("full_name").value.trim(),
+      age: document.getElementById("age").value.trim(),
+      occupation: document.getElementById("occupation").value.trim(),
+      country: document.getElementById("country").value.trim(),
+      images: capturedImages
+    };
+
+    const response = await fetch("/register_submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+    alert(result.message);
+
+    if (result.success) {
+      registerForm.reset();
+      capturedImages = [];
+      capturedImagesDiv.innerHTML = "";
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Recognize Face</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+      background-image: url('{{ url_for("static", filename="Background_security.png") }}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .wrapper {
+      background-color: rgba(0, 0, 0, 0.5);
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 480px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    video {
+      border-radius: 12px;
+      box-shadow: 0 0 15px #0077aa;
+      width: 100%;
+      height: auto;
+      background-color: black;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px 30px;
+      font-size: 18px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background-color: #004466;
+      color: white;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: #0077aa;
+    }
+
+    #result {
+      margin-top: 25px;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px #333;
+    }
+
+    #id-image {
+      border-radius: 12px;
+      width: 160px;
+      height: 160px;
+      box-shadow: 0 0 15px #00ccff;
+    }
+
+    @media (max-width: 600px) {
+      .wrapper {
+        width: 95%;
+        padding: 15px;
+      }
+      button {
+        font-size: 20px;
+      }
+      #result {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrapper">
+    <h1>Recognize Face</h1>
+    <video id="video" autoplay muted playsinline></video>
+    <button id="capture-btn">Capture & Recognize</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const video = document.getElementById("video");
+    const captureBtn = document.getElementById("capture-btn");
+    const resultDiv = document.getElementById("result");
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        alert("Could not access webcam: " + err);
+      });
+
+    captureBtn.addEventListener("click", async () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0);
+
+      const dataUrl = canvas.toDataURL("image/png");
+      resultDiv.innerHTML = "<p>Recognizing...</p>";
+
+      const response = await fetch("/recognize_submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: dataUrl })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        const info = result.info;
+        const idImage = result.id_image;
+
+        resultDiv.innerHTML = `
+          <img id="id-image" src="${idImage}" alt="ID Image" />
+          <h2>${info["Full Name"] || info["Name"]}</h2>
+          <p>🧓 Age: ${info["Age"] || "N/A"}</p>
+          <p>💼 Occupation: ${info["Occupation"] || "N/A"}</p>
+          <p>🌍 Country: ${info["Country"] || "N/A"}</p>
+        `;
+      } else {
+        resultDiv.innerHTML = `<p>${result.message}</p>`;
+      }
+    });
+  </script>
+
+</body>
+</html>

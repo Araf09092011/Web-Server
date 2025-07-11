@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>👤 Portfolio</title>
+  <style>
+    body {
+      background-image: url("/static/bg/portfolio.png");
+      background-size: cover;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 30px;
+      text-align: center;
+    }
+    .card {
+      background-color: rgba(0,0,0,0.6);
+      padding: 20px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+    img {
+      border-radius: 12px;
+      width: 150px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>{{ info["Full Name"] }}</h2>
+    <img src="{{ url_for('static', filename='profile_pics/' + img_name) }}" alt="ID Image" /><br><br>
+    <p>🧓 Age: {{ info["Age"] }}</p>
+    <p>💼 Occupation: {{ info["Occupation"] }}</p>
+    <p>🌍 Country: {{ info["Country"] }}</p>
+  </div>
+</body>
+</html>
